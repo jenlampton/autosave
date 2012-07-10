@@ -190,7 +190,7 @@ function autosave_restore($formid, $timestamp) {
     // tell it to actually submit back to where it would have submitted to
     // originally.
     $form['#action'] = url($record->path);
-    $form['autosave_form_path']['#value'] = $form['#action'];
+    $form['autosave_form_path']['#value'] = $record->path;
 
     // We don't want to change the HTML ID of the form, because we're replacing
     // it in-place.  Drupal wants to give this a suffix for some reason.
