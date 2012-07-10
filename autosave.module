@@ -165,7 +165,19 @@ function autosave_restore($formid, $timestamp) {
       require_once DRUPAL_ROOT . '/' . $menu_item['include_file'];
     }
     $form_state['input'] = unserialize($record->serialized);
-    $form_state['build_info']['args'] = $menu_item['page_arguments'];
+
+    // The node_form() form builder expects the first argument to be a full node
+    // object, even when adding a new node. The node/add/[type] menu item only
+    // has a string as its argument, instead of a full object, so we convert it
+    // here for the form.
+    $build_info_args = $menu_item['page_arguments'];
+    if (is_string($build_info_args[0])) {
+      $node = (object) array('type' => $build_info_args[0]);
+      node_object_prepare($node);
+      $build_info_args[0] = $node;
+    }
+    $form_state['build_info']['args'] = $build_info_args;
+
     // Disable the "this form has already been submitted" nonsense by making
     // Drupal think the form is being rebuilt as part of a multi-step form.
     $form_state['rebuild'] = TRUE;
@@ -272,10 +284,9 @@ function autosave_save() {
   }
   else {
     // add case
-    $submitted->changed = db_query("SELECT created FROM {node} WHERE uid = :uid and type = :type ORDER BY created DESC LIMIT 1", array(
+    $submitted->changed = db_query_range("SELECT created FROM {node} WHERE uid = :uid and type = :type ORDER BY created DESC", 0, 1, array(
       ':uid' => $user->uid,
-      ':type' => str_replace("-", "_", $path_args[2]))
-    )->fetchField();
+      ':type' => str_replace("-", "_", $path_args[2])))->fetchField();
   }
 
   if (!$submitted || (REQUEST_TIME - $submitted->changed) > 10) {
