@@ -11,7 +11,7 @@
 ().
  */
 function autosave_enable() {
-  drupal_set_message(t('Autosave module successfully installed. Please review the <a href="@settings">configuration settings</a>.', array('@settings' => url('admin/config/autosave'))));
+  drupal_set_message(t('Autosave module successfully installed. Please review the <a href="@settings">configuration settings</a>.', array('@settings' => url('admin/config/content/autosave'))));
 }
 
 /**

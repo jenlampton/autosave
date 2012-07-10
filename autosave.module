@@ -39,7 +39,7 @@ function autosave_menu() {
     'delivery callback' => 'ajax_deliver',
   );
 
-  $items['admin/config/autosave'] = array(
+  $items['admin/config/content/autosave'] = array(
     'title'            => 'Autosave',
     'description'      => 'Configure autosave settings.',
     'page callback'    => 'drupal_get_form',
