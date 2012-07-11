@@ -91,9 +91,10 @@ function autosave_form_alter(&$form, &$form_state, $form_id) {
   $path = request_path();
 
   if (stristr($form_id, '_node_form') && arg(0) != 'admin') {
+    static $added = FALSE;
 
     // Check if this content_type has the autosave function enabled and make sure it's a node edit or add form.
-    if ((variable_get('autosave_' . $form['type']['#value'], 0)) && empty($_POST['autosave_form_path'])) {
+    if ((variable_get('autosave_' . $form['type']['#value'], 0)) && empty($_POST['autosave_form_path']) && !$added) {
       drupal_add_library('system', 'drupal.ajax');
       drupal_add_js(AUTOSAVE_PATH . '/jquery.autosave.js');
       drupal_add_js(AUTOSAVE_PATH . '/autosave.js');
@@ -127,6 +128,7 @@ function autosave_form_alter(&$form, &$form_state, $form_id) {
       );
 
       drupal_add_js($settings, array('type' => 'setting', 'scope' => JS_DEFAULT));
+      $added = TRUE;
     }
   }
 }
@@ -193,9 +195,10 @@ function autosave_restore($formid, $timestamp) {
 
     $commands[] = ajax_command_replace('#' . $formid, drupal_render($form));
 
-    return array('#type' => 'ajax', '#commands' => $commands);
-
-    return $commands;
+    return array(
+      '#type' => 'ajax',
+      '#commands' => $commands,
+    );
   }
 }
 
@@ -215,7 +218,7 @@ function autosave_restore($formid, $timestamp) {
  *   True if this user should have access to save this form, false otherwise.
  */
 function autosave_save_access() {
-  $path = trim($_POST['autosave_form_path'], '/');
+  $path = $_POST['autosave_form_path'];
   $menu_item = autosave_menu_get_item($path);
 
   $token = isset($_POST['form_token'], $_POST['form_id']) && drupal_valid_token($_POST['form_token'], $_POST['form_id']);
