@@ -53,11 +53,6 @@ function autosave_menu() {
  * Menu callback; return the autosave module settings form.
  */
 function autosave_admin_settings($form, &$form_state) {
-  if (!file_exists(AUTOSAVE_PATH . '/jquery.autosave.js')) {
-    drupal_set_message(t('Unable to find the jQuery Autosave Plugin in !path. Please <a href="http://plugins.jquery.com/files/jquery.autosave_0.zip">download jquery.autosave.js</a>
-      and place it into !path.', array('!path' => AUTOSAVE_PATH)), 'error');
-  }
-
   $form['autosave_period'] = array(
     '#type' => 'textfield',
     '#title' => t('Autosave after this amount seconds has passed'),
