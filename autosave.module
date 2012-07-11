@@ -50,6 +50,17 @@ function autosave_menu() {
 }
 
 /**
+ * Implements hook_custom_theme().
+ */
+function autosave_custom_theme() {
+  // Ensure that the correct theme is used when restoring a form.
+  if (strpos($_GET['q'], 'autosave/restore') === 0) {
+    $theme = arg(5);
+    return !empty($theme) ? $theme : NULL;
+  }
+}
+
+/**
  * Menu callback; return the autosave module settings form.
  */
 function autosave_admin_settings($form, &$form_state) {
@@ -87,7 +98,7 @@ function autosave_form_node_type_form_alter(&$form, $form_state) {
  * Implements hook_form_alter().
  */
 function autosave_form_alter(&$form, &$form_state, $form_id) {
-  global $user;
+  global $user, $theme;
   $path = request_path();
 
   if (stristr($form_id, '_node_form') && arg(0) != 'admin') {
@@ -107,6 +118,7 @@ function autosave_form_alter(&$form, &$form_state, $form_id) {
       $settings['autosave']['period'] = variable_get('autosave_period', 10);
       $settings['autosave']['q'] = $path;
       $settings['autosave']['hidden'] = variable_get('autosave_hidden', 0);
+      $settings['autosave']['theme'] = $theme;
 
       // If an autosaved version of the form exists, let the user know so that
       // he can restore it if desired.

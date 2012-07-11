@@ -29,7 +29,7 @@ Drupal.behaviors.autosave.attach = function (context, settings) {
           return false;
         });
 
-        callbackPath = Drupal.settings.basePath + 'autosave/restore/' + autosaveSettings.formid + '/' + autosaveSettings.savedTimestamp + '/' + autosaveSettings.formToken;
+        callbackPath = Drupal.settings.basePath + 'autosave/restore/' + autosaveSettings.formid + '/' + autosaveSettings.savedTimestamp + '/' + autosaveSettings.formToken + '/' + autosaveSettings.theme;
         restoreLink = $('<a>').attr('href', callbackPath).addClass('use-ajax').attr('title', Drupal.t('Restore saved form')).html(Drupal.t('Restore')).click(function (e) {
           Drupal.behaviors.autosave.hideMessage();
         });
