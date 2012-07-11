@@ -38,7 +38,7 @@ Drupal.behaviors.autosave.attach = function (context, settings) {
           // Show the message for 30 seconds, or hide it when the user starts
           // editing the form.
           timeout: 30000,
-          extra: $('<span id="operations">').append(ignoreLink).append(' - ').append(restoreLink)
+          extra: $('<span id="operations">').append(ignoreLink).append(restoreLink)
         });
       }
 
