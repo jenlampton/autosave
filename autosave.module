@@ -160,7 +160,7 @@ function autosave_restore($formid, $timestamp) {
     // We need to extract and reuse any additional page arguments that the
     // original form may have.  That's especially true for, say, a node form,
     // which needs the node object passed in as well.
-    $menu_item = menu_get_item($record->path);
+    $menu_item = autosave_menu_get_item($record->path);
     if ($menu_item['include_file']) {
       require_once DRUPAL_ROOT . '/' . $menu_item['include_file'];
     }
@@ -221,7 +221,7 @@ function autosave_restore($formid, $timestamp) {
  */
 function autosave_save_access() {
   $path = trim($_POST['autosave_form_path'], '/');
-  $menu_item = menu_get_item($path);
+  $menu_item = autosave_menu_get_item($path);
 
   $token = isset($_POST['form_token'], $_POST['form_id']) && drupal_valid_token($_POST['form_token'], $_POST['form_id']);
   $menu = isset($menu_item['access']) ? $menu_item['access'] : FALSE;
@@ -252,7 +252,7 @@ function autosave_restore_access($formid, $timestamp, $form_token) {
   $record = autosave_get_autosaved_form($formid, $timestamp, $GLOBALS['user']->uid);
 
   if (isset($record->path)) {
-    $menu_item = menu_get_item($record->path);
+    $menu_item = autosave_menu_get_item($record->path);
 
     $token = drupal_valid_token($form_token, str_replace('-', '_', $formid));
     $menu = isset($menu_item['access']) ? $menu_item['access'] : FALSE;
@@ -352,4 +352,25 @@ function autosave_node_presave($node) {
       ->condition('path', $_GET['q'])
       ->execute();
   }
+}
+
+/**
+ * Retreives a menu item for a given path.
+ *
+ * This is a wrapper around menu_get_item() that removes any language prefixes
+ * from the path if present.
+ *
+ * @param $path
+ *   A menu path such as es/node/add/article.
+ * @return
+ *   A menu item array as returned by menu_get_item().
+ */
+function autosave_menu_get_item($path) {
+  if (language_negotiation_get_any(LOCALE_LANGUAGE_NEGOTIATION_URL)) {
+    $url_part = variable_get('locale_language_negotiation_url_part', LOCALE_LANGUAGE_NEGOTIATION_URL_PREFIX);
+    if ($url_part === LOCALE_LANGUAGE_NEGOTIATION_URL_PREFIX) {
+      list($lang, $path) = language_url_split_prefix($path, language_list());
+    }
+  }
+  return menu_get_item($path);
 }
