@@ -53,13 +53,11 @@ function autosave_schema() {
         ),
         'uid' => array(
           'type'        => 'int',
-          'length'      => 11,
           'not null'    => TRUE,
           'default'     => 0,
         ),
         'timestamp' => array(
           'type'        => 'int',
-          'length'      => 11,
           'not null'    => TRUE,
           'default'     => 0,
         ),
