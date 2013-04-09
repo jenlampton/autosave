@@ -376,7 +376,7 @@ function autosave_node_presave($node) {
  *   A menu item array as returned by menu_get_item().
  */
 function autosave_menu_get_item($path) {
-  if (language_negotiation_get_any(LOCALE_LANGUAGE_NEGOTIATION_URL)) {
+  if (drupal_multilingual() && language_negotiation_get_any(LOCALE_LANGUAGE_NEGOTIATION_URL)) {
     $url_part = variable_get('locale_language_negotiation_url_part', LOCALE_LANGUAGE_NEGOTIATION_URL_PREFIX);
     if ($url_part === LOCALE_LANGUAGE_NEGOTIATION_URL_PREFIX) {
       list($lang, $path) = language_url_split_prefix($path, language_list());
