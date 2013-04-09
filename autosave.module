@@ -53,10 +53,20 @@ function autosave_menu() {
  * Implements hook_library().
  */
 function autosave_library() {
-  $libraries['autosave'] = array(
-    'title' => 'Autosave',
+  $libraries['jquery.autosave'] = array(
+    'title' => 'jQuery Autosave',
+    'website' => 'https://bitbucket.org/stanlemon/jquery-autosave',
+    'version' => '1.1.0',
     'js' => array(
       drupal_get_path('module', 'autosave') . '/jquery.autosave.js' => array(),
+    ),
+  );
+
+  $libraries['autosave'] = array(
+    'title' => 'Autosave',
+    'website' => 'http://drupal.org/project/autosave',
+    'version' => '',
+    'js' => array(
       drupal_get_path('module', 'autosave') . '/autosave.js' => array(),
     ),
     'css' => array(
@@ -64,6 +74,7 @@ function autosave_library() {
     ),
     'dependencies' => array(
       array('system', 'drupal.ajax'),
+      array('autosave', 'jquery.autosave'),
     ),
   );
 
