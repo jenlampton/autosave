@@ -50,6 +50,27 @@ function autosave_menu() {
 }
 
 /**
+ * Implements hook_library().
+ */
+function autosave_library() {
+  $libraries['autosave'] = array(
+    'title' => 'Autosave',
+    'js' => array(
+      drupal_get_path('module', 'autosave') . '/jquery.autosave.js' => array(),
+      drupal_get_path('module', 'autosave') . '/autosave.js' => array(),
+    ),
+    'css' => array(
+      drupal_get_path('module', 'autosave') . '/autosave.css' => array(),
+    ),
+    'dependencies' => array(
+      array('system', 'drupal.ajax'),
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
  * Implements hook_custom_theme().
  */
 function autosave_custom_theme() {
