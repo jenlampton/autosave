@@ -320,9 +320,9 @@ function autosave_save() {
   }
   else {
     // add case
-    $submitted->changed = db_query_range("SELECT created FROM {node} WHERE uid = :uid and type = :type ORDER BY created DESC", 0, 1, array(
+    $submitted = db_query_range("SELECT created AS changed FROM {node} WHERE uid = :uid and type = :type ORDER BY created DESC", 0, 1, array(
       ':uid' => $user->uid,
-      ':type' => str_replace("-", "_", $path_args[2])))->fetchField();
+      ':type' => str_replace("-", "_", $path_args[2])))->fetchObject();
   }
 
   if (!$submitted || (REQUEST_TIME - $submitted->changed) > 10) {
