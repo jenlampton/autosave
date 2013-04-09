@@ -198,6 +198,7 @@ function autosave_restore($formid, $timestamp) {
     $menu_item = autosave_menu_get_item($record->path);
     if ($menu_item['include_file']) {
       require_once DRUPAL_ROOT . '/' . $menu_item['include_file'];
+      $form_state['build_info']['files'][] = $menu_item['include_file'];
     }
     $form_state['input'] = unserialize($record->serialized);
 
