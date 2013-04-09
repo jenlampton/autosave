@@ -127,53 +127,47 @@ function autosave_form_node_type_form_alter(&$form, $form_state) {
 }
 
 /**
- * Implements hook_form_alter().
+ * Implements hook_form_BASE_FORM_ID_alter().
  */
-function autosave_form_alter(&$form, &$form_state, $form_id) {
-  global $user, $theme;
-  $path = request_path();
+function autosave_form_node_form_alter(&$form, &$form_state, $form_id) {
+  $node = $form['#node'];
 
-  if (stristr($form_id, '_node_form') && arg(0) != 'admin') {
-    static $added = FALSE;
+  if (arg(0) != 'admin' && variable_get('autosave_' . $node->type, 0) && empty($_POST['autosave_form_path'])) {
+    $path = request_path();
 
-    // Check if this content_type has the autosave function enabled and make sure it's a node edit or add form.
-    if ((variable_get('autosave_' . $form['type']['#value'], 0)) && empty($_POST['autosave_form_path']) && !$added) {
-      drupal_add_library('system', 'drupal.ajax');
-      drupal_add_js(AUTOSAVE_PATH . '/jquery.autosave.js');
-      drupal_add_js(AUTOSAVE_PATH . '/autosave.js');
-      drupal_add_css(AUTOSAVE_PATH . '/autosave.css');
+    // Make a note in the form of what the original path is, since when submitting
+    // the autosaved form to our own callback it will not be the same.
+    $form['autosave_form_path'] = array(
+      '#type' => 'hidden',
+      '#value' => $path,
+    );
 
-      $formid = str_replace("_", "-", $form_id);
+    $formid = str_replace("_", "-", $form_id);
 
-      $settings['autosave']['formid'] = $formid;
-      $settings['autosave']['url'] = url('autosave/handler');
-      $settings['autosave']['period'] = variable_get('autosave_period', 10);
-      $settings['autosave']['q'] = $path;
-      $settings['autosave']['hidden'] = variable_get('autosave_hidden', 0);
-      $settings['autosave']['theme'] = $theme;
+    $settings['autosave']['formid'] = $formid;
+    $settings['autosave']['url'] = url('autosave/handler');
+    $settings['autosave']['period'] = variable_get('autosave_period', 10);
+    $settings['autosave']['q'] = $path;
+    $settings['autosave']['hidden'] = variable_get('autosave_hidden', 0);
+    $settings['autosave']['theme'] = $GLOBALS['theme'];
 
-      // If an autosaved version of the form exists, let the user know so that
-      // he can restore it if desired.
-      $timestamp = db_query("SELECT timestamp FROM {autosaved_forms} WHERE form_id = :form_id AND path = :path AND uid = :uid", array(
-        ':form_id' => $form_id,
-        ':path' => $path,
-        ':uid' => $user->uid,
-      ))->fetchField();
-      $settings['autosave']['savedTimestamp'] = $timestamp ? $timestamp : 0;
-      $settings['autosave']['savedDate'] = $timestamp ? format_date($timestamp) : 0;
+    // If an autosaved version of the form exists, let the user know so that
+    // he can restore it if desired.
+    $timestamp = db_query("SELECT timestamp FROM {autosaved_forms} WHERE form_id = :form_id AND path = :path AND uid = :uid", array(
+      ':form_id' => $form_id,
+      ':path' => $path,
+      ':uid' => $GLOBALS['user']->uid,
+    ))->fetchField();
+    $settings['autosave']['savedTimestamp'] = $timestamp ? $timestamp : 0;
+    $settings['autosave']['savedDate'] = $timestamp ? format_date($timestamp) : 0;
+    $settings['autosave']['formToken'] = drupal_get_token($form_id);
 
-      $settings['autosave']['formToken'] = drupal_get_token($form_id);
-
-      // Make a note in the form of what the original path is, since when submitting
-      // the autosaved form to our own callback it will not be the same.
-      $form['autosave_form_path'] = array(
-        '#type' => 'hidden',
-        '#value' => $path,
-      );
-
-      drupal_add_js($settings, array('type' => 'setting', 'scope' => JS_DEFAULT));
-      $added = TRUE;
-    }
+    $form['autosave_form_path']['#attached']['library'][] = array('autosave', 'autosave');
+    $form['autosave_form_path']['#attached']['js'][] = array(
+      'data' => $settings,
+      'type' => 'setting',
+      'scope' => JS_DEFAULT,
+    );
   }
 }
 
