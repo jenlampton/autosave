@@ -1,10 +1,4 @@
 name = Autosave
 description = Saves node edits in the background in case browser dies while editing.
-
-package = Other
-project = autosave
-
 core = 7.x
-
-files[] = autosave.install
-files[] = autosave.module
+configure = admin/config/content/autosave
