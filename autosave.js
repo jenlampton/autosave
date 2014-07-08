@@ -12,8 +12,8 @@ Drupal.behaviors.autosave.attach = function (context, settings) {
   }
 
   autosaveSettings = settings.autosave;
-
-  $('#' + autosaveSettings.formid).not('.autosave-processed').addClass('autosave-processed').autosave({
+  var $selector = $('input[name="form_id"][value="' + autosaveSettings.formid + '"] ').parents('form').not('.autosave-processed');
+  $selector.addClass('autosave-processed').autosave({
     interval: autosaveSettings.period * 1000, // Time in ms
     url: autosaveSettings.url,
     setup: function (e, o) {
