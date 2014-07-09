@@ -438,9 +438,9 @@ function autosave_get_autosaved_form($form_id, $timestamp, $uid) {
 }
 
 /**
- * Implements hook_node_presave().
+ * Implements hook_node_update().
  */
-function autosave_node_presave($node) {
+function autosave_node_update($node) {
   if (isset($node->form_id)) {
     // we remove ALL edits for that page (not just the users) to avoid:
     //  - user1 saves but doesn't submit
