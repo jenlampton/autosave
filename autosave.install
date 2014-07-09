@@ -15,15 +15,6 @@ function autosave_enable() {
 }
 
 /**
- * Implements hook_install().
-().
- */
-function autosave_install() {
-  // TODO The drupal_(un)install_schema functions are called automatically in D7.
-  // drupal_install_schema('autosave')
-}
-
-/**
  * Implements hook_uninstall().
 ().
  */
@@ -31,11 +22,11 @@ function autosave_uninstall() {
   variable_del('autosave_period');
   variable_del('autosave_hidden');
   variable_del('autosave_form_ids');
+  variable_del('autosave_timeout');
 }
 
 /**
  * Implements hook_schema()
-().
  */
 function autosave_schema() {
   return array(

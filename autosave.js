@@ -25,19 +25,21 @@ Drupal.behaviors.autosave.attach = function (context, settings) {
         showingRestoreCommand = true;
 
         ignoreLink = $('<a>').attr('href', '#').attr('title', Drupal.t('Ignore/Delete saved form')).html(Drupal.t('Ignore')).click(function (e) {
+          showingRestoreCommand = false;
           Drupal.behaviors.autosave.hideMessage();
           return false;
         });
 
         callbackPath = Drupal.settings.basePath + 'autosave/restore/' + autosaveSettings.formid + '/' + autosaveSettings.savedTimestamp + '/' + autosaveSettings.formToken + '/' + autosaveSettings.theme;
         restoreLink = $('<a>').attr('href', callbackPath).addClass('use-ajax').attr('title', Drupal.t('Restore saved form')).html(Drupal.t('Restore')).click(function (e) {
+          showingRestoreCommand = false;
           Drupal.behaviors.autosave.hideMessage();
         });
 
         Drupal.behaviors.autosave.displayMessage(Drupal.t('This form was autosaved on ' + autosaveSettings.savedDate), {
           // Show the message for 30 seconds, or hide it when the user starts
           // editing the form.
-          timeout: 30000,
+          timeout: autosaveSettings.timeout * 1000,
           extra: $('<span id="operations">').append(ignoreLink).append(restoreLink)
         });
       }
@@ -77,8 +79,13 @@ Drupal.behaviors.autosave.attach = function (context, settings) {
     },
     save: function (e, o) {
       if (!autosaveSettings.hidden) {
-        Drupal.behaviors.autosave.displayMessage(Drupal.t('Form autosaved.'));
+        Drupal.behaviors.autosave.displayMessage(Drupal.t('Form autosaved.'),
+          { timeout: 3000 });
       }
+    },
+    before: function () {
+      // Do not autosave the form while the Ignore/Restore popup is shown.
+      return !showingRestoreCommand;
     },
     dirty: function (e, o) {
       if (showingRestoreCommand) {
@@ -90,11 +97,12 @@ Drupal.behaviors.autosave.attach = function (context, settings) {
 
 Drupal.behaviors.autosave.hideMessage = function() {
   $('#autosave-status').fadeOut('slow');
+  // We have hidden the Ignore/Restore popup so we start autosaving the form.
+  showingRestoreCommand = false;
 };
 
 Drupal.behaviors.autosave.displayMessage = function(message, settings) {
   settings = settings || {};
-  settings.timeout = settings.timeout || 3000;
   settings.extra = settings.extra || '';
   //settings = $.extend({}, {timeout: 3000, extra: ''}, settings);
   var status = $('#autosave-status');
@@ -105,7 +113,9 @@ Drupal.behaviors.autosave.displayMessage = function(message, settings) {
   Drupal.attachBehaviors(status);
 
   $('#autosave-status').slideDown();
-  setTimeout(Drupal.behaviors.autosave.hideMessage, settings.timeout);
+  if (settings.timeout) {
+    setTimeout(Drupal.behaviors.autosave.hideMessage, settings.timeout);
+  }
 };
 
 })(jQuery);
