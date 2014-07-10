@@ -55,6 +55,13 @@ function autosave_menu() {
     'delivery callback' => 'autosave_delivery_callback',
     'access callback' => 'autosave_popup_access',
   );
+  $items['autosave/remove'] = array(
+    'title'           => 'Autosave form removal',
+    'page callback'   => 'autosave_remove',
+    'type'            => MENU_CALLBACK,
+    'access callback' => 'autosave_restore_access',
+    'access arguments' => array(2, 3, 4),
+  );
   return $items;
 }
 
@@ -123,6 +130,12 @@ function autosave_admin_settings($form, &$form_state) {
     '#description' => t('If this check box is selected no popup will appear notifying user that the form has been autosaved.'),
     '#default_value' => variable_get('autosave_hidden', 0),
     '#suffix' => "</div>",
+  );
+  $form['autosave_ignore_behavior'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Remove autosaved form when clicking \'Ignore\''),
+    '#description' => t('If this checkbox is selected the autosaved form will be deleted from the database when clicking the Ignore button.'),
+    '#default_value' => variable_get('autosave_ignore_behavior', 0),
   );
 
   $form['autosave_form_ids'] = array(
@@ -209,6 +222,7 @@ function autosave_form_alter(&$form, &$form_state, $form_id) {
       $settings['autosave']['timeout'] = intval(variable_get('autosave_timeout', 0));
       $settings['autosave']['q'] = $path;
       $settings['autosave']['hidden'] = variable_get('autosave_hidden', 0);
+      $settings['autosave']['ignoreBehavior'] = variable_get('autosave_ignore_behavior', 0);
       $settings['autosave']['theme'] = $GLOBALS['theme'];
 
       // If an autosaved version of the form exists, let the user know so that
@@ -481,4 +495,21 @@ function autosave_menu_get_item($path) {
     }
   }
   return menu_get_item($path);
+}
+
+/**
+ * Menu callback to remove autosaved form from database.
+ *
+ * Gets its data from $_POST.
+ */
+function autosave_remove() {
+  if (!empty($_POST['form_id']) && !empty($_POST['form_token'])) {
+    global $user;
+    $form = array();
+    $form['#form_id'] = str_replace('-', '_', $_POST['form_id']);
+    if (drupal_valid_token($_POST['form_token'], $form['#form_id'])) {
+      $_POST['autosave_form_path'] = $_POST['q'];
+      autosave_remove_autosaved_form_submit($form, array());
+    }
+  }
 }

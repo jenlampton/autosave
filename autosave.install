@@ -108,3 +108,10 @@ function autosave_update_7000() {
     }
   }
 }
+
+/**
+ * Clear menu cache.
+ */
+function autosave_update_7001() {
+  menu_cache_clear_all();
+}

@@ -31,6 +31,12 @@ Drupal.behaviors.autosave.attach = function (context, settings) {
           $('#autosave-status .ignore-link').click(function(e) {
             showingRestoreCommand = false;
             Drupal.behaviors.autosave.hideMessage();
+            // Remove the autosaved form from the database if settings 
+            // are such.
+            if (autosaveSettings.ignoreBehavior) {
+              var path = Drupal.settings.basePath + 'autosave/remove/' + autosaveSettings.form_id + '/' + autosaveSettings.savedTimestamp + '/' + autosaveSettings.form_token; 
+              $.post(path, autosaveSettings);
+            }
             return false;
           });
           $('#autosave-status .restore-link').click(function(e) {
