@@ -77,17 +77,17 @@ Drupal.behaviors.autosave.attach = function (context, settings) {
       }
 
       // Wire up CKEditor to autosave.
-      // @todo This does not yet support CKEditor 4.
-      if (typeof(CKEDITOR) !== 'undefined') {
-        CKEDITOR.on('instanceReady', function (eventInfo) {
-          var editor = eventInfo.editor;
-          editor.on('saveSnapshot', function () {
-            editor.updateElement();
-          });
-        });
+      if (typeof(CKEDITOR) !== 'undefined'){
+        setInterval(function() {
+          var id;
+          for (id in CKEDITOR.instances) {
+            var instance = CKEDITOR.instances[id];
+            instance.updateElement();
+          }
+        }, autosaveSettings.period * 1000);
       }
-
     },
+    
     save: function (e, o) {
       var savedCallback = function(html) {
         Drupal.behaviors.autosave.displayMessage(html,
