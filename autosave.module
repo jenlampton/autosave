@@ -6,6 +6,7 @@
  */
 
 define('AUTOSAVE_PATH', drupal_get_path('module', 'autosave'));
+require_once DRUPAL_ROOT . '/' . AUTOSAVE_PATH . '/autosave.theme.inc';
 
 /**
  * Implements hook_help().
@@ -45,6 +46,14 @@ function autosave_menu() {
     'page callback'    => 'drupal_get_form',
     'page arguments'   => array('autosave_admin_settings'),
     'access arguments' => array('administer nodes'),
+  );
+  $items['autosave/popup'] = array(
+    'title'           => 'Autosave popup markup',
+    'page callback'   => 'autosave_popup',
+    'page arguments' => array(2),
+    'type'            => MENU_CALLBACK,
+    'delivery callback' => 'autosave_delivery_callback',
+    'access callback' => 'autosave_popup_access',
   );
   return $items;
 }
@@ -194,10 +203,10 @@ function autosave_form_alter(&$form, &$form_state, $form_id) {
           ->execute();
       }
 
-      $settings['autosave']['formid'] = $form_id;
+      $settings['autosave']['form_id'] = $form_id;
       $settings['autosave']['url'] = url('autosave/handler');
       $settings['autosave']['period'] = variable_get('autosave_period', 10);
-      $settings['autosave']['timeout'] = intval(variable_get('autosave_timeout', 30));
+      $settings['autosave']['timeout'] = intval(variable_get('autosave_timeout', 0));
       $settings['autosave']['q'] = $path;
       $settings['autosave']['hidden'] = variable_get('autosave_hidden', 0);
       $settings['autosave']['theme'] = $GLOBALS['theme'];
@@ -211,7 +220,7 @@ function autosave_form_alter(&$form, &$form_state, $form_id) {
       ))->fetchField();
       $settings['autosave']['savedTimestamp'] = $timestamp ? $timestamp : 0;
       $settings['autosave']['savedDate'] = $timestamp ? format_date($timestamp) : 0;
-      $settings['autosave']['formToken'] = drupal_get_token($form_id);
+      $settings['autosave']['form_token'] = drupal_get_token($form_id);
 
       $form['#id'] = str_replace("_", "-", $form_id);
       $form['autosave_form_path']['#attached']['library'][] = array('autosave', 'autosave');
