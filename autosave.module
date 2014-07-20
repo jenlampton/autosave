@@ -198,8 +198,9 @@ function autosave_form_alter(&$form, &$form_state, $form_id) {
       );
 
       // Store form arguments in db only if the form has not been autosaved
-      // before.
-      if (!empty($form_state['build_info']['args']) && strpos($path, 'autosave/restore/') !== 0) {
+      // before. The second part of the condition prevents the creation of db
+      // entries with autosave/restore/ path during autosave restore AJAX.
+      if (!empty($form_state['build_info']['args']) && !strpos($path, 'autosave/restore/')) {
         $key = array(
           'form_id' => $form_id,
           'uid' => $GLOBALS['user']->uid,
