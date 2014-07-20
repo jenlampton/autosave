@@ -14,11 +14,10 @@ Drupal.behaviors.autosave.attach = function (context, settings) {
   autosaveSettings = settings.autosave;
   var $selector = $('input[name="form_id"][value="' + autosaveSettings.form_id + '"] ').parents('form').not('.autosave-processed');
   $selector.addClass('autosave-processed').autosave({
-    interval: autosaveSettings.period * 1000, // Time in ms
+    // Autosave interval time in ms
+    interval: autosaveSettings.period * 1000, 
     url: autosaveSettings.url,
     setup: function (e, o) {
-      var ignoreLink, restoreLink, callbackPath;
-
       // If there is a saved form for this user, let him know so he can reload it
       // if desired.
       if (autosaveSettings.savedTimestamp) {
@@ -64,8 +63,7 @@ Drupal.behaviors.autosave.attach = function (context, settings) {
           // Note: There seems to be a bug where after a form is restored,
           // everything works fine but tinyMCE keeps reporting an undefined
           // error internally.  As its code is compressed I have absolutely no
-          // way to debug this.  If you can figure it out, please file a patch.
-
+          // way to debug this. If you can figure it out, please file a patch.
           var triggers = Drupal.settings.wysiwyg.triggers;
           var id;
           var field;
