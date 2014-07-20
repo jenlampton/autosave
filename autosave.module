@@ -510,7 +510,18 @@ function autosave_remove() {
     $form['#form_id'] = str_replace('-', '_', $_POST['form_id']);
     if (drupal_valid_token($_POST['form_token'], $form['#form_id'])) {
       $_POST['autosave_form_path'] = $_POST['q'];
-      autosave_remove_autosaved_form_submit($form, array());
+      $key = array(
+          'form_id' => $form_id,
+          'uid' => $GLOBALS['user']->uid,
+          'path' => $path,
+        );
+        db_merge('autosaved_forms')
+          ->key($key)
+          ->updateFields(array(
+            'timestamp' => 0,
+            'serialized' => '',
+          ))
+          ->execute();
     }
   }
 }
