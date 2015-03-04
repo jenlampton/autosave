@@ -217,6 +217,7 @@ function autosave_form_alter(&$form, &$form_state, $form_id) {
           ->execute();
       }
 
+      $settings = array();
       $settings['autosave']['form_id'] = $form_id;
       $settings['autosave']['url'] = url('autosave/handler');
       $settings['autosave']['period'] = variable_get('autosave_period', 10);
@@ -274,8 +275,10 @@ function autosave_restore($form_id, $timestamp) {
   global $user;
   // Fetch the saved form, if any.
   $record = autosave_get_autosaved_form($form_id, $timestamp, $user->uid);
+  $commands = array();
 
   if ($record) {
+    $form_state = array();
     // We need to extract and reuse any additional page arguments that the
     // original form may have.  That's especially true for, say, a node form,
     // which needs the node object passed in as well.
@@ -409,6 +412,7 @@ function autosave_save() {
  */
 function autosave_autosave_prevent_alter(&$prevent_autosave) {
   // TODO: Do something clever for not just node forms.
+  global $user;
   $path = $_POST['autosave_form_path'];
   $path_args = explode("/", $path);
   // check if node has just been saved - if it has then it's because AS ajax fired off as user was submitting
@@ -512,7 +516,7 @@ function autosave_remove() {
       $_POST['autosave_form_path'] = $_POST['q'];
       $key = array(
           'form_id' => $form_id,
-          'uid' => $GLOBALS['user']->uid,
+          'uid' => $user->uid,
           'path' => $path,
         );
         db_merge('autosaved_forms')
