@@ -25,6 +25,7 @@ function autosave_help($path, $arg) {
 * Implements hook_menu().
 */
 function autosave_menu() {
+  $items = array();
   $items['autosave/handler'] = array(
     'title'           => 'Autosave save',
     'page callback'   => 'autosave_save',
@@ -69,6 +70,7 @@ function autosave_menu() {
  * Implements hook_library().
  */
 function autosave_library() {
+  $libraries = array();
   $libraries['jquery.autosave'] = array(
     'title' => 'jQuery Autosave',
     'website' => 'https://bitbucket.org/stanlemon/jquery-autosave',
@@ -200,7 +202,7 @@ function autosave_form_alter(&$form, &$form_state, $form_id) {
       // Store form arguments in db only if the form has not been autosaved
       // before. The second part of the condition prevents the creation of db
       // entries with autosave/restore/ path during autosave restore AJAX.
-      if (!empty($form_state['build_info']['args']) && !strpos($path, 'autosave/restore/')) {
+      if (!empty($form_state['build_info']['args']) && (strpos($path, 'autosave/restore/') !== 0)) {
         $key = array(
           'form_id' => $form_id,
           'uid' => $GLOBALS['user']->uid,
@@ -514,6 +516,8 @@ function autosave_remove() {
     $form['#form_id'] = str_replace('-', '_', $_POST['form_id']);
     if (drupal_valid_token($_POST['form_token'], $form['#form_id'])) {
       $_POST['autosave_form_path'] = $_POST['q'];
+      $form_id = check_plain($_POST['form_id']);
+      $path = check_plain($_POST['q']);
       $key = array(
           'form_id' => $form_id,
           'uid' => $user->uid,
