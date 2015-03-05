@@ -18,8 +18,8 @@ Drupal.behaviors.autosave.attach = function (context, settings) {
     interval: autosaveSettings.period * 1000, 
     url: autosaveSettings.url,
     setup: function (e, o) {
-      // If there is a saved form for this user, let him know so he can reload it
-      // if desired.
+      // If there is a saved form for this user, let them know so it can be 
+      // reloaded if desired.
       if (autosaveSettings.savedTimestamp) {
         showingRestoreCommand = true;
 
