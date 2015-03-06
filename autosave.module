@@ -302,6 +302,9 @@ function autosave_restore($form_id, $timestamp) {
     // Drupal think the form is being rebuilt as part of a multi-step form.
     $form_state['rebuild'] = TRUE;
 
+    // Stop recording of form error messages
+    $form_state['triggering_element']['#limit_validation_errors'] = array();
+
     // When restoring we will need to know the form token so that the user can
     // be validated.
     $form = drupal_build_form($form_id, $form_state);
