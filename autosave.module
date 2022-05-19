@@ -115,15 +115,24 @@ function autosave_admin_settings($form, &$form_state) {
   $config = config('autosave.settings');
   $form['#config'] = 'autosave.settings';
   $form['period'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Autosave after this amount of seconds has passed'),
-    '#default_value' => $config->get('period'),
+    '#type' => 'number',
+    '#title' => t('Autosave interval period'),
+    '#description' => t('Autosave after this amount of seconds has passed'),
+    '#default_value' => (int) $config->get('period'),
+    '#required' => TRUE,
+    '#min' => 1,
+    '#max' => 86400,
+    '#step' => 1,
   );
   $form['timeout'] = array(
-    '#type' => 'textfield',
+    '#type' => 'number',
     '#title' => t('Autosave timeout'),
     '#description' => t('No autosaving happens while the Ignore/Restore popup is shown. Here you can set the amount of seconds to show this popup for. Set this to 0 to hide it only if the user clicks either Ignore or Restore.'),
-    '#default_value' => $config->get('timeout'),
+    '#default_value' => (int) $config->get('timeout'),
+    '#required' => TRUE,
+    '#min' => 0,
+    '#max' => 86400,
+    '#step' => 1,
   );
   $form['hidden'] = array(
     '#prefix' =>  '<div class="form-item"><label for="edit-autosave-hidden">' . t('Stealth Mode') . '</label>',
