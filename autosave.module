@@ -87,6 +87,17 @@ function autosave_library_info() {
 }
 
 /**
+ * Implements hook_config_info().
+ */
+function autosave_config_info() {
+  $prefixes['autosave.settings'] = array(
+    'label' => t('Autosave settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
+
+/**
  * Implements hook_custom_theme().
  */
 function autosave_custom_theme() {
@@ -103,35 +114,35 @@ function autosave_custom_theme() {
 function autosave_admin_settings($form, &$form_state) {
   $config = config('autosave.settings');
   $form['#config'] = 'autosave.settings';
-  $form['autosave_period'] = array(
+  $form['period'] = array(
     '#type' => 'textfield',
     '#title' => t('Autosave after this amount of seconds has passed'),
-    '#default_value' => $config->get('autosave_period'),
+    '#default_value' => $config->get('period'),
   );
-  $form['autosave_timeout'] = array(
+  $form['timeout'] = array(
     '#type' => 'textfield',
     '#title' => t('Autosave timeout'),
     '#description' => t('No autosaving happens while the Ignore/Restore popup is shown. Here you can set the amount of seconds to show this popup for. Set this to 0 to hide it only if the user clicks either Ignore or Restore.'),
-    '#default_value' => $config->get('autosave_timeout'),
+    '#default_value' => $config->get('timeout'),
   );
-  $form['autosave_hidden'] = array(
+  $form['hidden'] = array(
     '#prefix' =>  '<div class="form-item"><label for="edit-autosave-hidden">' . t('Stealth Mode') . '</label>',
     '#type' => 'checkbox',
     '#title' => t('Run in stealth mode'),
     '#description' => t('If this check box is selected no popup will appear notifying user that the form has been autosaved.'),
-    '#default_value' => $config->get('autosave_hidden'),
+    '#default_value' => $config->get('hidden'),
     '#suffix' => "</div>",
   );
-  $form['autosave_ignore_behavior'] = array(
+  $form['ignore_behavior'] = array(
     '#type' => 'checkbox',
     '#title' => t('Remove autosaved form when clicking \'Ignore\''),
     '#description' => t('If this checkbox is selected the autosaved form will be deleted from the database when clicking the Ignore button.'),
-    '#default_value' => $config->get('autosave_ignore_behavior'),
+    '#default_value' => $config->get('ignore_behavior'),
   );
 
-  $form['autosave_form_ids'] = array(
+  $form['form_ids'] = array(
     '#type' => 'textarea',
-    '#default_value' => $config->get('autosave_form_ids'),
+    '#default_value' => $config->get('form_ids'),
     '#title' => t('Form ids to autosave'),
     '#description' => t('Add the form ids that autosave should apply to. Each form id should go into a separate line. Note that content form autosaving can also be enabled on the content type admin form. The form id of a form is the \'value\' attribute of the hidden &lt;input&gt; HTML element with the name \'form_id\' in the &lt;form&gt;.'),
   );
@@ -156,7 +167,7 @@ function autosave_form_node_type_form_alter(&$form, $form_state) {
   $form['autosave']['autosave_enabled'] = array(
     '#type' => 'checkbox',
     '#title' => t('Enable Autosave to add/edit forms for this content type'),
-    '#default_value' => $autosave_settings_config->get('autosave_' . $form['#node_type']->type),
+    '#default_value' => $autosave_settings_config->get('node_types.' . $form['#node_type']->type),
     '#description' => t('Check this box to enable Autosave for this content type.')
   );
   $form['#submit'][] = 'autosave_node_type_form_submit';
@@ -166,9 +177,9 @@ function autosave_form_node_type_form_alter(&$form, $form_state) {
  * Submit handler for node type form.
  */
 function autosave_node_type_form_submit($form, &$form_state) {
-  if (isset($form_state['values']['autosave'])) {
+  if (isset($form_state['values']['autosave_enabled'])) {
     $config = config('autosave.settings');
-    $config->set('autosave_' . $form_state['values']['type'], $form_state['values']['autosave_enabled']);
+    $config->set('node_types.' . $form_state['values']['type'], $form_state['values']['autosave_enabled']);
     $config->save();
   }
 }
@@ -186,9 +197,9 @@ function autosave_form_alter(&$form, &$form_state, $form_id) {
   $autosave_node_form = FALSE;
   if (!empty($form['#node'])) {
     $node = $form['#node'];
-    $autosave_node_form = ($config->get('autosave_' . $node->type) && (arg(0) != 'admin'));
+    $autosave_node_form = ($config->get('node_types.' . $node->type) && (arg(0) != 'admin'));
   }
-  $form_ids = explode("\n", $config->get('autosave_form_ids'));
+  $form_ids = explode("\n", $config->get('form_ids'));
   foreach ($form_ids as &$formid) {
     $formid = trim($formid);
   }
@@ -236,11 +247,11 @@ function autosave_form_alter(&$form, &$form_state, $form_id) {
       $settings = array();
       $settings['autosave']['form_id'] = $form_id;
       $settings['autosave']['url'] = url('autosave/handler');
-      $settings['autosave']['period'] = $config->get('autosave_period');
-      $settings['autosave']['timeout'] = intval($config->get('autosave_timeout'));
+      $settings['autosave']['period'] = $config->get('period');
+      $settings['autosave']['timeout'] = intval($config->get('timeout'));
       $settings['autosave']['q'] = $path;
-      $settings['autosave']['hidden'] = $config->get('autosave_hidden');
-      $settings['autosave']['ignoreBehavior'] = $config->get('autosave_ignore_behavior');
+      $settings['autosave']['hidden'] = $config->get('hidden');
+      $settings['autosave']['ignoreBehavior'] = $config->get('ignore_behavior');
       $settings['autosave']['theme'] = $GLOBALS['theme'];
 
       // If an autosaved version of the form exists, let the user know so that
@@ -449,7 +460,7 @@ function autosave_autosave_prevent_alter(&$prevent_autosave) {
         ':uid' => $user->uid,
         ':type' => str_replace("-", "_", $path_args[2])))->fetchObject();
     }
-    $prevent_autosave = ($submitted && (REQUEST_TIME - $submitted->changed < config_get('autosave.settings', 'autosave_period'))) ? TRUE : $prevent_autosave;
+    $prevent_autosave = ($submitted && (REQUEST_TIME - $submitted->changed < config_get('autosave.settings', 'period'))) ? TRUE : $prevent_autosave;
   }
 }
 

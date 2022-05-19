@@ -1,8 +1,8 @@
 {
     "_config_name": "autosave.settings",
-    "autosave_period": "10",
-    "autosave_timeout": "0",
-    "autosave_hidden": 0,
-    "autosave_ignore_behavior": 0,
-    "autosave_form_ids": ""
+    "period": "10",
+    "timeout": "0",
+    "hidden": 0,
+    "ignore_behavior": 0,
+    "form_ids": ""
 }
