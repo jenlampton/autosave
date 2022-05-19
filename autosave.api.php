@@ -13,6 +13,7 @@
  *   More useful parameters are in $_POST.
  */
 function hook_autosave_prevent_alter(&$prevent_autosave) {
+  global $user;
   $path = $_POST['autosave_form_path'];
   $path_args = explode("/", $path);
   // check if node has just been saved - if it has then it's because AS ajax fired off as user was submitting

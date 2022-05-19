@@ -46,7 +46,7 @@
 		    // the autosave request.
 			if ( $(this).data('autosave.dirty') == true )
 			    $(this).trigger('autosave.save', [false]);
-		
+
 			$(this).removeClass('autosave').unbind('autosave');
 			$(this).data('autosave.form', null);
 			$(this).data('autosave.dirty', null);
@@ -77,7 +77,7 @@
 				var callback = function(response){
 					$(self).data('autosave.active', false);
 					$(self).trigger('autosave.record');
-					
+
 					o.save.apply( self , [self,o,response] );
 				};
 
@@ -85,7 +85,7 @@
 					o.url.apply( self.element , [self.element,o,data,callback] );
 				} else {
 					$.ajax({
-					    async: 	(async == undefined) ? true : async,
+					  async: 	(async == undefined) ? true : async,
 						url: 	(o == undefined || o.url == undefined) ? $(this).attr('action') : o.url,
 						type: 	'post',
 						data: 	data,
@@ -118,11 +118,11 @@
 		/** Callbacks **/
 		setup: 		function(e,o) {},
 		record: 	function(e,o) {},
-		before: 	function(e,o) { 
-			return true; 
+		before: 	function(e,o) {
+			return true;
 		},
 		validate: 	function(e,o) {
-			return $.isFunction($.fn.validate) && !$(this).is('.ignore-validate') ? $(this).valid() : true; 
+			return $.isFunction($.fn.validate) && !$(this).is('.ignore-validate') ? $(this).valid() : true;
 		},
 		save: 		function(e,o) {},
 		shutdown: 	function(e,o) {},

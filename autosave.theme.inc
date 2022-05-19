@@ -13,14 +13,14 @@ function autosave_theme() {
     // no access check, watch out what these theme functions return!
     'autosave_saved_popup' => array(
       'template' => 'autosave_saved_popup',
-      'path' => drupal_get_path('module', 'autosave'),
+      'path' => backdrop_get_path('module', 'autosave'),
       'variables' => array(
         'autosave' => array(),
       ),
     ),
     'autosave_restore_popup' => array(
       'template' => 'autosave_restore_popup',
-      'path' => drupal_get_path('module', 'autosave'),
+      'path' => backdrop_get_path('module', 'autosave'),
       'variables' => array(
         'autosave' => array(),
       ),
@@ -80,7 +80,7 @@ function autosave_popup($theme) {
  */
 function autosave_popup_access() {
   $form_id = str_replace('-', '_', $_POST['form_id']);
-  $token = isset($_POST['form_token'], $form_id) && drupal_valid_token($_POST['form_token'], $form_id);
+  $token = isset($_POST['form_token'], $form_id) && backdrop_valid_token($_POST['form_token'], $form_id);
   // If we are just about to show the Form autosaved popup, it's
   // enough to verify the form token. We don't know the form path anyway.
   if ($_GET['q'] == 'autosave/popup/autosave_saved_popup') {

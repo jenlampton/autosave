@@ -1,4 +1,5 @@
 name = Autosave
 description = Saves node edits in the background in case browser dies while editing.
-core = 7.x
+backdrop = 1.x
+type = module
 configure = admin/config/content/autosave
