@@ -54,26 +54,6 @@ Backdrop.behaviors.autosave.attach = function (context, settings) {
         });
       }
 
-      // Wire up TinyMCE to autosave.
-      // if (typeof(tinymce) !== 'undefined') {
-      //   setInterval(function() {
-      //     // Save text data from the tinymce area back to the original form element.
-      //     // Once it's in the original form element, autosave will notice it
-      //     // and do what it needs to do.
-      //     // Note: There seems to be a bug where after a form is restored,
-      //     // everything works fine but tinyMCE keeps reporting an undefined
-      //     // error internally.  As its code is compressed I have absolutely no
-      //     // way to debug this. If you can figure it out, please file a patch.
-      //     var triggers = Backdrop.settings.wysiwyg.triggers;
-      //     var id;
-      //     var field;
-      //     for (id in triggers) {
-      //       field = triggers[id].field;
-      //       $('#' + field).val(tinymce.get(field).getContent());
-      //     }
-      //   }, autosaveSettings.period * 1000);
-      // }
-
       // Wire up CKEditor to autosave.
       if (typeof(CKEDITOR) !== 'undefined'){
         setInterval(function() {
