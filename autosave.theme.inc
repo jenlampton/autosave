@@ -12,14 +12,14 @@ function autosave_theme() {
     // q, hidden, theme, savedTimestamp, savedDate, form_token. There's
     // no access check, watch out what these theme functions return!
     'autosave_saved_popup' => array(
-      'template' => 'autosave_saved_popup',
+      'template' => 'templates/autosave_saved_popup',
       'path' => backdrop_get_path('module', 'autosave'),
       'variables' => array(
         'autosave' => array(),
       ),
     ),
     'autosave_restore_popup' => array(
-      'template' => 'autosave_restore_popup',
+      'template' => 'templates/autosave_restore_popup',
       'path' => backdrop_get_path('module', 'autosave'),
       'variables' => array(
         'autosave' => array(),

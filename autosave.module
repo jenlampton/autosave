@@ -63,7 +63,7 @@ function autosave_library_info() {
     'website' => 'https://bitbucket.org/stanlemon/jquery-autosave',
     'version' => '1.1.0',
     'js' => array(
-      backdrop_get_path('module', 'autosave') . '/jquery.autosave.js' => array(),
+      backdrop_get_path('module', 'autosave') . '/js/jquery.autosave.js' => array(),
     ),
   );
 
@@ -72,10 +72,10 @@ function autosave_library_info() {
     'website' => 'http://drupal.org/project/autosave',
     'version' => '',
     'js' => array(
-      backdrop_get_path('module', 'autosave') . '/autosave.js' => array(),
+      backdrop_get_path('module', 'autosave') . '/js/autosave.js' => array(),
     ),
     'css' => array(
-      backdrop_get_path('module', 'autosave') . '/autosave.css' => array(),
+      backdrop_get_path('module', 'autosave') . '/css/autosave.css' => array(),
     ),
     'dependencies' => array(
       array('system', 'backdrop.ajax'),
