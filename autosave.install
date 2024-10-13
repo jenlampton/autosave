@@ -57,13 +57,6 @@ function autosave_schema() {
 }
 
 /**
- * Implements hook_update_last_removed().
- */
-function autosave_update_last_removed() {
-  return 7001;
-}
-
-/**
  * Move autosave settings from variables to config.
  */
 function autosave_update_1000() {
@@ -89,4 +82,21 @@ function autosave_update_1000() {
   foreach (array_keys(node_type_get_types()) as $type) {
     update_variable_del('autosave_' . $type);
   }
+}
+
+/**
+ * Add a new 'args' column into the 'autosaved_forms' table.
+ */
+function autosave_update_1001() {
+  // Copy of autosave_update_7000() - minus the forms data.
+  if (!db_field_exists('autosaved_forms', 'args')) {
+    $spec = array(
+      'type' => 'text',
+      'size' => 'big',
+    );
+    db_add_field( 'autosaved_forms', 'args', $spec);
+  }
+
+  // Copy of autosave_update_7001().
+  menu_cache_clear_all();
 }
